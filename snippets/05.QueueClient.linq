@@ -17,7 +17,34 @@ static async Task MainAsync()
 
 	await CreateEntities(namespaceManager, "myqueue").ConfigureAwait(false);
 	
-	var msg = new BrokeredMessage("First message");
+	#region ReceiveMode.ReceiveAndDelete
+	
+	var msg = new BrokeredMessage("Message received in ReceiveMode.ReceiveAndDelete");
+	
+	var queueClient = QueueClient.CreateFromConnectionString(connectionString, "myqueue", ReceiveMode.ReceiveAndDelete);
+	await queueClient.SendAsync(msg).ConfigureAwait(false);
+	
+	Debugger.Launch();
+
+	var receivedMsg = await queueClient.ReceiveAsync();
+	($"Received message with body `{receivedMsg.GetBody<string>()}`").Dump();
+
+	#endregion
+
+	#region ReceiveMode.PeekLock
+
+//	var msg = new BrokeredMessage("Message received in ReceiveMode.PeekLock");
+//
+//	var queueClient = QueueClient.CreateFromConnectionString(connectionString, "myqueue", ReceiveMode.PeekLock);
+//	await queueClient.SendAsync(msg).ConfigureAwait(false);
+//
+//	Debugger.Launch();
+//
+//	var receivedMsg = await queueClient.ReceiveAsync();
+//	($"Received message with body `{receivedMsg.GetBody<string>()}`").Dump();
+//	await receivedMsg.CompleteAsync().ConfigureAwait(false);
+
+	#endregion
 }
 
 static async Task CreateEntities(NamespaceManager nsm, string queuePath)
